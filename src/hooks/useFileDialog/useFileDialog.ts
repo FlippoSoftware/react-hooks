@@ -97,14 +97,13 @@ export function useFileDialog(input: UseFileDialogOptions = {}): UseFileDialogRe
         inputRef.current = createInput(options.current);
 
         if (inputRef.current) {
-            const handleChange
-                = (event: Event) => {
-                    const target = event.target as HTMLInputElement;
-                    if (target?.files) {
-                        setFiles(target.files);
-                        options.current.onChange?.(target.files);
-                    }
-                };
+            const handleChange = (event: Event) => {
+                const target = event.target as HTMLInputElement;
+                if (target?.files) {
+                    setFiles(target.files);
+                    options.current.onChange?.(target.files);
+                }
+            };
 
             inputRef.current.addEventListener('change', handleChange, { once: true });
             document.body.appendChild(inputRef.current);

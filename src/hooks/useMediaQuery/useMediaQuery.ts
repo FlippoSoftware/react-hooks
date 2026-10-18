@@ -7,8 +7,7 @@ export function useMediaQuery(query: string, options: useMediaQuery.Options = {}
     // All the browsers Headless UI support have this built-in.
     // This defensive check is here for simplicity.
     // Most of the time, the match media logic isn't central to people tests.
-    const supportMatchMedia
-        = typeof window !== 'undefined' && typeof window.matchMedia !== 'undefined';
+    const supportMatchMedia = typeof window !== 'undefined' && typeof window.matchMedia !== 'undefined';
 
     query = query.replace(/^@media ?/m, '');
 
@@ -31,13 +30,7 @@ export function useMediaQuery(query: string, options: useMediaQuery.Options = {}
             return () => matches;
         }
         return getDefaultSnapshot;
-    }, [
-        getDefaultSnapshot,
-        query,
-        ssrMatchMedia,
-        noSsr,
-        matchMedia
-    ]);
+    }, [getDefaultSnapshot, query, ssrMatchMedia, noSsr, matchMedia]);
 
     const [getSnapshot, subscribe] = React.useMemo(() => {
         if (matchMedia === null) {
@@ -46,12 +39,15 @@ export function useMediaQuery(query: string, options: useMediaQuery.Options = {}
 
         const mediaQueryList = matchMedia(query);
 
-        return [() => mediaQueryList.matches, (notify: () => void) => {
-            mediaQueryList.addEventListener('change', notify);
-            return () => {
-                mediaQueryList.removeEventListener('change', notify);
-            };
-        }];
+        return [
+            () => mediaQueryList.matches,
+            (notify: () => void) => {
+                mediaQueryList.addEventListener('change', notify);
+                return () => {
+                    mediaQueryList.removeEventListener('change', notify);
+                };
+            }
+        ];
     }, [getDefaultSnapshot, matchMedia, query]);
 
     const match = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

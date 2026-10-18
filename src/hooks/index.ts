@@ -1,3 +1,7 @@
+export { isTarget, target } from '~@lib/isTarget';
+
+export type { HookTarget, Target } from '~@lib/isTarget';
+
 export * from './useAnimationFrame';
 export * from './useAnimationsFinished';
 export * from './useClickOutside';
@@ -56,7 +60,6 @@ export * from './useScrollLock';
 export * from './useScrollSpy';
 export * from './useSsr';
 export * from './useStatusTransition';
-export * from './useStore';
 export * from './useTextSelection';
 export * from './useTimeout';
 export * from './useTransitionStatus';
@@ -64,6 +67,3 @@ export * from './useUnmount';
 export * from './useViewportSize';
 export * from './useWindowEvent';
 export * from './useWindowScroll';
-
-export { isTarget, target } from '~@lib/isTarget';
-export type { HookTarget, Target } from '~@lib/isTarget';

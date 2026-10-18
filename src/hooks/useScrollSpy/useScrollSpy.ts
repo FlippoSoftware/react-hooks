@@ -24,7 +24,7 @@ function getHeadingsData(
     return result;
 }
 
-function getActiveElement(rects: DOMRect[], offset: number = 0) {
+function getActiveElement(rects: DOMRect[], offset = 0) {
     if (rects.length === 0) {
         return -1;
     }
@@ -121,11 +121,7 @@ export function useScrollSpy({
     });
 
     const initialize = useStableCallback(() => {
-        const headings = getHeadingsData(
-            Array.from(document.querySelectorAll(selector)),
-            getDepth,
-            getValue
-        );
+        const headings = getHeadingsData(Array.from(document.querySelectorAll(selector)), getDepth, getValue);
         headingsRef.current = headings;
         setInitialized(true);
         setData(headings);

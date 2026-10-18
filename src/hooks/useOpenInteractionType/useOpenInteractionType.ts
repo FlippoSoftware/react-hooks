@@ -8,10 +8,12 @@ import type { Interaction } from '../useEnhancedClickHandler';
 export function useOpenInteractionType(open: boolean) {
     const [openMethod, setOpenMethod] = React.useState<Interaction | null>(null);
 
-    const triggerClick = React.useCallback((_: React.MouseEvent | React.PointerEvent, interactionType: Interaction) => {
-        if (!open)
-            setOpenMethod(interactionType);
-    }, [open, setOpenMethod]);
+    const triggerClick = React.useCallback(
+        (_: React.MouseEvent | React.PointerEvent, interactionType: Interaction) => {
+            if (!open) setOpenMethod(interactionType);
+        },
+        [open, setOpenMethod]
+    );
 
     const reset = useEventCallback(() => {
         setOpenMethod(null);
@@ -19,5 +21,8 @@ export function useOpenInteractionType(open: boolean) {
 
     const { onClick, onPointerDown } = useEnhancedClickHandler(triggerClick);
 
-    return React.useMemo(() => ({ openMethod, reset, triggerProps: { onPointerDown, onClick } }), [onClick, onPointerDown, openMethod, reset]);
+    return React.useMemo(
+        () => ({ openMethod, reset, triggerProps: { onPointerDown, onClick } }),
+        [onClick, onPointerDown, openMethod, reset]
+    );
 }

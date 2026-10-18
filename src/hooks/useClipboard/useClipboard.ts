@@ -6,10 +6,10 @@ function transformValue(text: string) {
 }
 
 /**
- * Copies the given text to the clipboard.
- * @param params - parameters object
- * @param params.timeout - timeout in ms, default 2000
- * @returns {copy, copied, error, reset} - copy function, copied state, error state, reset function
+ * Copies text to the clipboard and remembers for a while that it did.
+ *
+ * @param params - `timeout`: how long `copied` stays `true`, in milliseconds (2000 by default).
+ * @returns `copy(text)`, `copied`, `error` (the last failure) and `reset()`.
  */
 export function useClipboard(params: UseClipboard.Params) {
     const { timeout = 2000 } = params;
@@ -36,15 +36,13 @@ export function useClipboard(params: UseClipboard.Params) {
     const copy = React.useCallback(
         (valueToCopy: any) => {
             if ('clipboard' in navigator) {
-                const transformedValue
-                    = typeof valueToCopy === 'string' ? transformValue(valueToCopy) : valueToCopy;
+                const transformedValue = typeof valueToCopy === 'string' ? transformValue(valueToCopy) : valueToCopy;
 
                 navigator.clipboard
                     .writeText(transformedValue)
                     .then(() => handleCopyResult(true))
                     .catch((err) => setError(err));
-            }
-            else {
+            } else {
                 setError(new Error('useClipboard: navigator.clipboard is not supported'));
             }
         },

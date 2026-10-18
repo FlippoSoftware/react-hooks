@@ -10,14 +10,8 @@ export type TransitionStatus = 'starting' | 'ending' | 'idle' | undefined;
  * @param open - a boolean that determines if the element is open.
  * @param enableIdleState - a boolean that enables the `'idle'` state between `'starting'` and `'ending'`
  */
-export function useTransitionStatus(
-    open: boolean,
-    enableIdleState: boolean = false,
-    deferEndingState: boolean = false
-) {
-    const [transitionStatus, setTransitionStatus] = React.useState<TransitionStatus>(
-        open && enableIdleState ? 'idle' : undefined
-    );
+export function useTransitionStatus(open: boolean, enableIdleState = false, deferEndingState = false) {
+    const [transitionStatus, setTransitionStatus] = React.useState<TransitionStatus>(open && enableIdleState ? 'idle' : undefined);
     const [mounted, setMounted] = React.useState(open);
 
     if (open && !mounted) {
@@ -44,12 +38,12 @@ export function useTransitionStatus(
             };
         }
 
-        return undefined;
+        return;
     }, [open, mounted, transitionStatus, deferEndingState]);
 
     useIsoLayoutEffect(() => {
         if (!open || enableIdleState) {
-            return undefined;
+            return;
         }
 
         const frame = AnimationFrame.request(() => {
@@ -65,7 +59,7 @@ export function useTransitionStatus(
 
     useIsoLayoutEffect(() => {
         if (!open || !enableIdleState) {
-            return undefined;
+            return;
         }
 
         if (open && mounted && transitionStatus !== 'idle') {
@@ -79,13 +73,7 @@ export function useTransitionStatus(
         return () => {
             AnimationFrame.cancel(frame);
         };
-    }, [
-        enableIdleState,
-        open,
-        mounted,
-        setTransitionStatus,
-        transitionStatus
-    ]);
+    }, [enableIdleState, open, mounted, setTransitionStatus, transitionStatus]);
 
     return React.useMemo(
         () => ({

@@ -28,12 +28,7 @@ export function useLongPress(
     onLongPress: (event: React.MouseEvent | React.TouchEvent) => void,
     options: UseLongPressOptions = {}
 ): UseLongPressReturnValue {
-    const {
-        threshold = 400,
-        onStart,
-        onFinish,
-        onCancel
-    } = options;
+    const { threshold = 400, onStart, onFinish, onCancel } = options;
     const isLongPressActive = React.useRef(false);
     const isPressed = React.useRef(false);
     const timeout = React.useRef<number>(-1);
@@ -70,11 +65,8 @@ export function useLongPress(
                 if (onFinish) {
                     onFinish(event);
                 }
-            }
-            else if (isPressed.current) {
-                if (onCancel) {
-                    onCancel(event);
-                }
+            } else if (isPressed.current && onCancel) {
+                onCancel(event);
             }
 
             isLongPressActive.current = false;
@@ -92,19 +84,11 @@ export function useLongPress(
             onTouchStart: start,
             onTouchEnd: cancel
         };
-    }, [
-        onLongPress,
-        threshold,
-        onCancel,
-        onFinish,
-        onStart
-    ]);
+    }, [onLongPress, threshold, onCancel, onFinish, onStart]);
 }
 
 function isTouchEvent(event: React.MouseEvent | React.TouchEvent): event is React.TouchEvent {
-    return window.TouchEvent
-        ? event.nativeEvent instanceof TouchEvent
-        : 'touches' in event.nativeEvent;
+    return window.TouchEvent ? event.nativeEvent instanceof TouchEvent : 'touches' in event.nativeEvent;
 }
 
 function isMouseEvent(event: React.MouseEvent | React.TouchEvent): event is React.MouseEvent {

@@ -13,10 +13,7 @@ type StateRef<Value> = {
     state: Value;
 };
 
-export type HookTarget
-    = | BrowserTarget
-      | RefObject<Element | null | undefined>
-      | StateRef<Element | null | undefined>;
+export type HookTarget = BrowserTarget | RefObject<Element | null | undefined> | StateRef<Element | null | undefined>;
 
 export function target(target: Target) {
     return {
@@ -32,11 +29,7 @@ export function isRefState(target: HookTarget) {
 }
 
 export function isBrowserTarget(target: HookTarget) {
-    return typeof target === 'object'
-      && target
-      && 'type' in target
-      && target.type === targetSymbol
-      && 'value' in target;
+    return typeof target === 'object' && target && 'type' in target && target.type === targetSymbol && 'value' in target;
 }
 
 export function isTarget(target: HookTarget) {
@@ -72,10 +65,8 @@ function getElement(target: HookTarget) {
 }
 export const getRefState = (target?: HookTarget) => target && 'state' in target && target.state;
 export function getRawElement(target: HookTarget) {
-    if (isRefState(target))
-        return target.state;
-    if (isBrowserTarget(target))
-        return (target as BrowserTarget).value;
+    if (isRefState(target)) return target.state;
+    if (isBrowserTarget(target)) return (target as BrowserTarget).value;
 
     return target;
 }

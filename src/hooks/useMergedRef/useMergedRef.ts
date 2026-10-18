@@ -24,9 +24,9 @@ export function mergedRef<I>(...refs: InputRef<I>[]): Result<I> {
 /**
  * Merges multiple refs into a single callback ref.
  *
- * @template I - The type of the element the ref will be attached to.
- * @param {...InputRef<I>[]} refs - The refs to be merged.
- * @returns {Result<I>} A callback ref that updates all provided refs.
+ * @typeParam I - The type of the element the ref will be attached to.
+ * @param refs - The refs to be merged.
+ * @returns A callback ref that updates all provided refs.
  */
 export function useMergedRef<I>(...refs: InputRef<I>[]): Result<I> {
     const mergeRef = useLazyRef(createMergedRef<I>).current;
@@ -99,8 +99,7 @@ function update<I>(forkRef: MergeRef<I>, refs: InputRef<I>[]) {
                             const cleanupCallback = cleanupCallbacks[i];
                             if (typeof cleanupCallback === 'function') {
                                 cleanupCallback();
-                            }
-                            else {
+                            } else {
                                 ref(null);
                             }
                             break;

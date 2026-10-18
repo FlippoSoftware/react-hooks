@@ -16,11 +16,7 @@ export enum Device {
 
 const { Browser, Server, Native } = Device;
 
-const canUseDOM: boolean = !!(
-    typeof window !== 'undefined'
-    && window.document
-    && window.document.createElement
-);
+const canUseDOM: boolean = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 
 const canUseNative: boolean = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
 

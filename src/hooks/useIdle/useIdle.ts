@@ -8,14 +8,7 @@ export type UseIdleOptions = {
 };
 
 const DEFAULT_OPTIONS: Required<UseIdleOptions> = {
-    events: [
-        'keydown',
-        'mousemove',
-        'touchmove',
-        'click',
-        'scroll',
-        'wheel'
-    ],
+    events: ['keydown', 'mousemove', 'touchmove', 'click', 'scroll', 'wheel'],
     initialState: true
 };
 
@@ -37,7 +30,9 @@ export function useIdle(timeout: number, options?: UseIdleOptions) {
             }, timeout);
         };
 
-        events.forEach((event) => document.addEventListener(event, handleEvents));
+        for (const event of events) {
+            document.addEventListener(event, handleEvents);
+        }
 
         // Start the timer immediately instead of waiting for the first event to happen
         timer.current = window.setTimeout(() => {
@@ -45,7 +40,9 @@ export function useIdle(timeout: number, options?: UseIdleOptions) {
         }, timeout);
 
         return () => {
-            events.forEach((event) => document.removeEventListener(event, handleEvents));
+            for (const event of events) {
+                document.removeEventListener(event, handleEvents);
+            }
             window.clearTimeout(timer.current);
             timer.current = -1;
         };

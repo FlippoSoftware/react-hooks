@@ -59,11 +59,8 @@ class Scheduler {
         /* In a test environment with fake timers, a fake `requestAnimationFrame` can be called
          * but there's no guarantee that the animation frame will actually run before the fake
          * timers are teared, which leaves `isScheduled` set, but won't run our `tick()`. */
-        const didRAFChange
-
-            = process.env.NODE_ENV === 'test'
-              && LAST_RAF !== requestAnimationFrame
-              && ((LAST_RAF = requestAnimationFrame), true);
+        const didRAFChange =
+            process.env.NODE_ENV === 'test' && LAST_RAF !== requestAnimationFrame && ((LAST_RAF = requestAnimationFrame), true);
 
         if (!this.isScheduled || didRAFChange) {
             requestAnimationFrame(this.tick);

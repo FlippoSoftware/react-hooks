@@ -26,9 +26,7 @@ export type UseResizeObserverReturn<T extends HTMLElement = any> = readonly [Ref
 
 export function useResizeObserver(target: HookTarget, options?: ResizeObserverOptions): ObserverRect;
 
-export function useResizeObserver<Target extends HTMLElement>(
-    options?: ResizeObserverOptions
-): UseResizeObserverReturn<Target>;
+export function useResizeObserver<Target extends HTMLElement>(options?: ResizeObserverOptions): UseResizeObserverReturn<Target>;
 
 export function useResizeObserver<Target extends HTMLElement>(
     ...args: [HookTarget, ResizeObserverOptions?] | [ResizeObserverOptions?]
@@ -48,34 +46,33 @@ export function useResizeObserver<Target extends HTMLElement>(
         () =>
             typeof window !== 'undefined'
                 ? new ResizeObserver((entries) => {
-                    const entry = entries[0];
+                      const entry = entries[0];
 
-                    if (entry) {
-                        cancelAnimationFrame(frameID.current);
+                      if (entry) {
+                          cancelAnimationFrame(frameID.current);
 
-                        frameID.current = requestAnimationFrame(() => {
-                            const boxSize = entry.borderBoxSize?.[0] || entry.contentBoxSize?.[0];
-                            if (boxSize) {
-                                const width = boxSize.inlineSize;
-                                const height = boxSize.blockSize;
+                          frameID.current = requestAnimationFrame(() => {
+                              const boxSize = entry.borderBoxSize?.[0] || entry.contentBoxSize?.[0];
+                              if (boxSize) {
+                                  const width = boxSize.inlineSize;
+                                  const height = boxSize.blockSize;
 
-                                setRect({
-                                    width,
-                                    height,
-                                    x: entry.contentRect.x,
-                                    y: entry.contentRect.y,
-                                    top: entry.contentRect.top,
-                                    left: entry.contentRect.left,
-                                    bottom: entry.contentRect.bottom,
-                                    right: entry.contentRect.right
-                                });
-                            }
-                            else {
-                                setRect(entry.contentRect);
-                            }
-                        });
-                    }
-                })
+                                  setRect({
+                                      width,
+                                      height,
+                                      x: entry.contentRect.x,
+                                      y: entry.contentRect.y,
+                                      top: entry.contentRect.top,
+                                      left: entry.contentRect.left,
+                                      bottom: entry.contentRect.bottom,
+                                      right: entry.contentRect.right
+                                  });
+                              } else {
+                                  setRect(entry.contentRect);
+                              }
+                          });
+                      }
+                  })
                 : null,
         []
     );

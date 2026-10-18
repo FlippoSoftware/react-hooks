@@ -29,9 +29,11 @@ function stripSrcPrefix() {
 }
 
 const entryPoints = Object.fromEntries(
-    glob.sync('src/**/*.{ts,tsx}', {
-        ignore: ['src/**/*.test.{ts,tsx}']
-    }).map((file) => [file.replace('src/', '').replace(/\.[^/.]+$/, ''), path.resolve(file)])
+    glob
+        .sync('src/**/*.{ts,tsx}', {
+            ignore: ['src/**/*.test.{ts,tsx}']
+        })
+        .map((file) => [file.replace('src/', '').replace(/\.[^/.]+$/, ''), path.resolve(file)])
 );
 
 type VitestConfigExport = {
@@ -40,11 +42,14 @@ type VitestConfigExport = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react(), dts({
-        insertTypesEntry: true,
-        entryRoot: 'src',
-        include: ['src/hooks/**/*.ts', 'src/lib/**/*.ts']
-    })],
+    plugins: [
+        react(),
+        dts({
+            insertTypesEntry: true,
+            entryRoot: 'src',
+            include: ['src/hooks/**/*.ts', 'src/lib/**/*.ts']
+        })
+    ],
     test: {
         globals: true,
         environment: 'jsdom',
@@ -61,8 +66,7 @@ export default defineConfig({
         },
         rollupOptions: {
             external: (id: string) =>
-                ['react', 'react-dom', 'tabbable', '@flippo-software/store'].includes(id) ||
-                id.startsWith('use-sync-external-store'),
+                ['react', 'react-dom', 'tabbable', '@flippo-software/store'].includes(id) || id.startsWith('use-sync-external-store'),
             plugins: [stripSrcPrefix()],
             output: {
                 preserveModules: true,
@@ -73,7 +77,7 @@ export default defineConfig({
     },
     envPrefix: 'HEADLESS_',
     resolve: {
-        alias: { '~@lib': path.resolve(__dirname, './src/lib') }
+        alias: { '~@lib': path.resolve(import.meta.dirname, './src/lib') }
     },
     server: {
         host: '0.0.0.0', // '127.0.0.1',

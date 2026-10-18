@@ -5,7 +5,12 @@ import { useEnhancedEffect } from '../useEnhancedEffect';
 export function useDidUpdate(callback: React.EffectCallback, deps?: React.DependencyList) {
     const isMountedRef = React.useRef(false);
 
-    useEnhancedEffect(() => () => { isMountedRef.current = false; }, []);
+    useEnhancedEffect(
+        () => () => {
+            isMountedRef.current = false;
+        },
+        []
+    );
 
     useEnhancedEffect(() => {
         if (isMountedRef.current) {
@@ -13,6 +18,6 @@ export function useDidUpdate(callback: React.EffectCallback, deps?: React.Depend
         }
 
         isMountedRef.current = true;
-        return undefined;
+        return;
     }, deps);
 }

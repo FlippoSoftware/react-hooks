@@ -18,15 +18,13 @@ export function useInViewport<T extends HTMLElement = any>(): UseInViewportRetur
                     const lastEntry = entries[entries.length - 1];
                     setInViewport(Boolean(lastEntry?.isIntersecting));
                 });
-            }
-            else {
+            } else {
                 observer.current?.disconnect();
             }
 
             if (node) {
                 observer.current?.observe(node);
-            }
-            else {
+            } else {
                 setInViewport(false);
             }
         }

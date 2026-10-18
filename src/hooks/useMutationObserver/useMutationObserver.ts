@@ -11,11 +11,7 @@ import { useValueAsRef } from '../useValueAsRef';
 
 import type { RefAsState } from '../useRefAsState';
 
-export function useMutationObserver(
-    target: HookTarget,
-    callback: MutationCallback,
-    options: MutationObserverInit
-): void;
+export function useMutationObserver(target: HookTarget, callback: MutationCallback, options: MutationObserverInit): void;
 
 export function useMutationObserver<Target extends HTMLElement>(
     callback: MutationCallback,

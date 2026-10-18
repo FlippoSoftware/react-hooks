@@ -21,20 +21,13 @@ export type UseClickOutsideOptions = {
 };
 
 function resolveNode(node: HookTarget | HTMLElement | null): HTMLElement | null {
-    if (!node)
-        return null;
-    if (node instanceof HTMLElement)
-        return node;
-    if (isTarget(node))
-        return isTarget.getElement(node) as HTMLElement | null;
+    if (!node) return null;
+    if (node instanceof HTMLElement) return node;
+    if (isTarget(node)) return isTarget.getElement(node) as HTMLElement | null;
     return null;
 }
 
-export function useClickOutside(
-    target: HookTarget,
-    callback: (event: EventType) => void,
-    options?: UseClickOutsideOptions
-): void;
+export function useClickOutside(target: HookTarget, callback: (event: EventType) => void, options?: UseClickOutsideOptions): void;
 
 export function useClickOutside<Target extends HTMLElement>(
     callback: (event: EventType) => void,
@@ -42,9 +35,7 @@ export function useClickOutside<Target extends HTMLElement>(
 ): { ref: RefAsState<Target> };
 
 export function useClickOutside<Target extends HTMLElement>(
-    ...args:
-      | [HookTarget, (event: EventType) => void, UseClickOutsideOptions?]
-      | [(event: EventType) => void, UseClickOutsideOptions?]
+    ...args: [HookTarget, (event: EventType) => void, UseClickOutsideOptions?] | [(event: EventType) => void, UseClickOutsideOptions?]
 ): void | { ref: RefAsState<Target> } {
     const target = (isTarget(args[0] as HookTarget) ? args[0] : undefined) as HookTarget | undefined;
     const callback = (target ? args[1] : args[0]) as (event: EventType) => void;
@@ -69,20 +60,22 @@ export function useClickOutside<Target extends HTMLElement>(
 
             if (Array.isArray(currentNodes) && currentNodes.length > 0) {
                 const resolvedNodes = currentNodes.map(resolveNode).filter(Boolean) as HTMLElement[];
-                const shouldIgnore
-                    = !document.body.contains(eventTarget as Node) && (eventTarget as Element)?.tagName !== 'HTML';
+                const shouldIgnore = !document.body.contains(eventTarget as Node) && (eventTarget as Element)?.tagName !== 'HTML';
                 const shouldTrigger = resolvedNodes.every((node) => !!node && !event.composedPath().includes(node));
                 shouldTrigger && !shouldIgnore && stableCallback(event as EventType);
-            }
-            else if (element && element instanceof Element && !element.contains(eventTarget as Node)) {
+            } else if (element && element instanceof Element && !element.contains(eventTarget as Node)) {
                 stableCallback(event as EventType);
             }
         };
 
-        eventsList.forEach((fn) => document.addEventListener(fn, listener));
+        for (const fn of eventsList) {
+            document.addEventListener(fn, listener);
+        }
 
         return () => {
-            eventsList.forEach((fn) => document.removeEventListener(fn, listener));
+            for (const fn of eventsList) {
+                document.removeEventListener(fn, listener);
+            }
         };
     }, [element, eventsList]);
 

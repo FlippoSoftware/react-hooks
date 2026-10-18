@@ -12,9 +12,7 @@ export type UseFocusReturnReturnValue = {
     saveFocus: () => void;
 };
 
-export function useFocusReturn({
-    manual = false
-}: UseFocusReturnOptions): UseFocusReturnReturnValue {
+export function useFocusReturn({ manual = false }: UseFocusReturnOptions): UseFocusReturnReturnValue {
     const savedElementRef = React.useRef<HTMLElement | null>(null);
 
     const saveFocus = useEventCallback(() => {
@@ -22,11 +20,7 @@ export function useFocusReturn({
     });
 
     const returnFocus = useEventCallback(() => {
-        if (
-            savedElementRef.current
-            && 'focus' in savedElementRef.current
-            && typeof savedElementRef.current.focus === 'function'
-        ) {
+        if (savedElementRef.current && 'focus' in savedElementRef.current && typeof savedElementRef.current.focus === 'function') {
             savedElementRef.current?.focus({ preventScroll: true });
 
             return;
@@ -38,8 +32,7 @@ export function useFocusReturn({
     });
 
     useIsoLayoutEffect(() => {
-        if (manual)
-            return;
+        if (manual) return;
 
         saveFocus();
 

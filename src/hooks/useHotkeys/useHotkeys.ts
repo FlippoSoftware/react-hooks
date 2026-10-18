@@ -2,11 +2,11 @@ import { useIsoLayoutEffect } from '../useIsoLayoutEffect';
 import { useValueAsRef } from '../useValueAsRef';
 
 /**
- * Клавиши-действия, которые можно использовать в хоткеях.
- * Все в нижнем регистре для удобства сравнения.
+ * The action keys a hotkey can use.
+ * All lowercase, for comparison.
  */
 export const hotkeyAbleKeys = [
-    // Буквы
+    // Letters
     'a',
     'b',
     'c',
@@ -33,7 +33,7 @@ export const hotkeyAbleKeys = [
     'x',
     'y',
     'z',
-    // Цифры
+    // Digits
     '0',
     '1',
     '2',
@@ -44,7 +44,7 @@ export const hotkeyAbleKeys = [
     '7',
     '8',
     '9',
-    // Функциональные
+    // Function keys
     'f1',
     'f2',
     'f3',
@@ -57,7 +57,7 @@ export const hotkeyAbleKeys = [
     'f10',
     'f11',
     'f12',
-    // Навигация и управление
+    // Navigation and editing
     'arrowup',
     'arrowdown',
     'arrowleft',
@@ -72,9 +72,9 @@ export const hotkeyAbleKeys = [
     'end',
     'pageup',
     'pagedown',
-    // Пробел
-    'space', // Псевдоним для ' '
-    // Основные символы US-раскладки
+    // Space
+    'space', // Alias of ' '
+    // The main symbols of the US layout
     '`',
     '-',
     '=',
@@ -82,30 +82,20 @@ export const hotkeyAbleKeys = [
     ']',
     '\\',
     ';',
-    '\'',
+    "'",
     ',',
     '.',
     '/'
 ];
 
 /**
- * Модификаторы, включая виртуальный 'mod'.
+ * The modifiers, including the virtual 'mod'.
  */
-export const modifierKeys = [
-    'control',
-    'alt',
-    'shift',
-    'meta',
-    'mod'
-];
+export const modifierKeys = ['control', 'alt', 'shift', 'meta', 'mod'];
 
 export type HotkeyItem = [string, (event: KeyboardEvent) => void, HotkeyItemOptions?];
 
-function shouldFireEvent(
-    event: KeyboardEvent,
-    tagsToIgnore: string[],
-    triggerOnContentEditable = false
-) {
+function shouldFireEvent(event: KeyboardEvent, tagsToIgnore: string[], triggerOnContentEditable = false) {
     if (event.target instanceof HTMLElement) {
         if (triggerOnContentEditable) {
             return !tagsToIgnore.includes(event.target.tagName);
@@ -128,20 +118,18 @@ export function useHotkeys(
 
     useIsoLayoutEffect(() => {
         const keydownListener = (event: KeyboardEvent) => {
-            hotkeysRef.current.forEach(
-                ([hotkey, handler, options = { preventDefault: true, usePhysicalKeys: false }]) => {
-                    if (
-                        getHotkeyMatcher(hotkey, options.usePhysicalKeys)(event)
-                        && shouldFireEvent(event, tagsToIgnoreRef.current, triggerOnContentEditableRef.current)
-                    ) {
-                        if (options.preventDefault) {
-                            event.preventDefault();
-                        }
-
-                        handler(event);
+            hotkeysRef.current.forEach(([hotkey, handler, options = { preventDefault: true, usePhysicalKeys: false }]) => {
+                if (
+                    getHotkeyMatcher(hotkey, options.usePhysicalKeys)(event) &&
+                    shouldFireEvent(event, tagsToIgnoreRef.current, triggerOnContentEditableRef.current)
+                ) {
+                    if (options.preventDefault) {
+                        event.preventDefault();
                     }
+
+                    handler(event);
                 }
-            );
+            });
         };
 
         document.documentElement.addEventListener('keydown', keydownListener);
@@ -165,22 +153,22 @@ type CheckHotkeyMatch = (event: KeyboardEvent) => boolean;
 
 const keyNameMap: Record<string, string> = {
     ' ': 'space',
-    'ArrowLeft': 'arrowleft',
-    'ArrowRight': 'arrowright',
-    'ArrowUp': 'arrowup',
-    'ArrowDown': 'arrowdown',
-    'Escape': 'escape',
-    'Esc': 'escape',
-    'esc': 'escape',
-    'Enter': 'enter',
-    'Tab': 'tab',
-    'Backspace': 'backspace',
-    'Delete': 'delete',
-    'Insert': 'insert',
-    'Home': 'home',
-    'End': 'end',
-    'PageUp': 'pageup',
-    'PageDown': 'pagedown',
+    ArrowLeft: 'arrowleft',
+    ArrowRight: 'arrowright',
+    ArrowUp: 'arrowup',
+    ArrowDown: 'arrowdown',
+    Escape: 'escape',
+    Esc: 'escape',
+    esc: 'escape',
+    Enter: 'enter',
+    Tab: 'tab',
+    Backspace: 'backspace',
+    Delete: 'delete',
+    Insert: 'insert',
+    Home: 'home',
+    End: 'end',
+    PageUp: 'pageup',
+    PageDown: 'pagedown',
     '+': 'plus',
     '-': 'minus',
     '*': 'asterisk',
@@ -207,13 +195,7 @@ export function parseHotkey(hotkey: string): Hotkey {
         plus: keys.includes('[plus]')
     };
 
-    const reservedKeys = [
-        'alt',
-        'ctrl',
-        'meta',
-        'shift',
-        'mod'
-    ];
+    const reservedKeys = ['alt', 'ctrl', 'meta', 'shift', 'mod'];
 
     const freeKey = keys.find((key) => !reservedKeys.includes(key));
 
@@ -224,22 +206,8 @@ export function parseHotkey(hotkey: string): Hotkey {
 }
 
 function isExactHotkey(hotkey: Hotkey, event: KeyboardEvent, usePhysicalKeys?: boolean): boolean {
-    const {
-        alt,
-        ctrl,
-        meta,
-        mod,
-        shift,
-        key
-    } = hotkey;
-    const {
-        altKey,
-        ctrlKey,
-        metaKey,
-        shiftKey,
-        key: pressedKey,
-        code: pressedCode
-    } = event;
+    const { alt, ctrl, meta, mod, shift, key } = hotkey;
+    const { altKey, ctrlKey, metaKey, shiftKey, key: pressedKey, code: pressedCode } = event;
 
     if (alt !== altKey) {
         return false;
@@ -249,8 +217,7 @@ function isExactHotkey(hotkey: Hotkey, event: KeyboardEvent, usePhysicalKeys?: b
         if (!ctrlKey && !metaKey) {
             return false;
         }
-    }
-    else {
+    } else {
         if (ctrl !== ctrlKey) {
             return false;
         }
@@ -263,10 +230,8 @@ function isExactHotkey(hotkey: Hotkey, event: KeyboardEvent, usePhysicalKeys?: b
     }
 
     if (
-        key
-        && (usePhysicalKeys
-            ? normalizeKey(pressedCode) === normalizeKey(key)
-            : normalizeKey(pressedKey ?? pressedCode) === normalizeKey(key))
+        key &&
+        (usePhysicalKeys ? normalizeKey(pressedCode) === normalizeKey(key) : normalizeKey(pressedKey ?? pressedCode) === normalizeKey(key))
     ) {
         return true;
     }
@@ -286,16 +251,14 @@ export type HotkeyItemOptions = {
 export function getHotkeyHandler(hotkeys: HotkeyItem[]) {
     return (event: React.KeyboardEvent<HTMLElement> | KeyboardEvent) => {
         const _event = 'nativeEvent' in event ? event.nativeEvent : event;
-        hotkeys.forEach(
-            ([hotkey, handler, options = { preventDefault: true, usePhysicalKeys: false }]) => {
-                if (getHotkeyMatcher(hotkey, options.usePhysicalKeys)(_event)) {
-                    if (options.preventDefault) {
-                        event.preventDefault();
-                    }
-
-                    handler(_event);
+        hotkeys.forEach(([hotkey, handler, options = { preventDefault: true, usePhysicalKeys: false }]) => {
+            if (getHotkeyMatcher(hotkey, options.usePhysicalKeys)(_event)) {
+                if (options.preventDefault) {
+                    event.preventDefault();
                 }
+
+                handler(_event);
             }
-        );
+        });
     };
 }

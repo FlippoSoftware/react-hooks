@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-import {
-    existsSync,
-    readdirSync,
-    readFileSync,
-    writeFileSync
-} from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,7 +11,7 @@ const distDir = join(packageRoot, 'dist');
 const packageJsonPath = join(packageRoot, 'package.json');
 
 /**
- * Получает все хуки из dist/hooks
+ * The hooks of dist/hooks.
  */
 function getHooks() {
     const hooksDir = join(distDir, 'hooks');
@@ -32,32 +27,34 @@ function getHooks() {
 }
 
 /**
- * Преобразует имя хука в kebab-case для exports
+ * The kebab-case name of a hook for the exports.
  */
 function toKebabCase(str) {
-    return str
-    // Разделяем по заглавным буквам
-        .replace(/([A-Z])/g, '-$1')
-    // Убираем первый дефис и переводим в нижний регистр
-        .toLowerCase()
-        .replace(/^-/, '');
+    return (
+        str
+            // Split at the capital letters
+            .replace(/([A-Z])/g, '-$1')
+            // Drop the leading hyphen and lowercase
+            .toLowerCase()
+            .replace(/^-/, '')
+    );
 }
 
 /**
- * Проверяет существование файлов
+ * Whether a file exists.
  */
 function checkFileExists(filePath) {
     return existsSync(join(packageRoot, filePath));
 }
 
 /**
- * Генерирует exports для компонента
+ * The exports of a hook.
  */
 function generateHookExport(hookName) {
     const kebabName = toKebabCase(hookName);
     const basePath = `./dist/hooks/${hookName}`;
 
-    // Проверяем какие файлы существуют
+    // Which files exist
     const cjsExists = checkFileExists(`${basePath}/index.cjs.js`);
     const esExists = checkFileExists(`${basePath}/index.es.js`);
     const typesExists = checkFileExists(`${basePath}/index.d.ts`);
@@ -74,15 +71,13 @@ function generateHookExport(hookName) {
     if (esExists && cjsExists) {
         exportEntry.import = `${basePath}/index.es.js`;
         exportEntry.require = `${basePath}/index.cjs.js`;
-    }
-    else if (esExists) {
+    } else if (esExists) {
         exportEntry.default = `${basePath}/index.es.js`;
-    }
-    else if (cjsExists) {
+    } else if (cjsExists) {
         exportEntry.default = `${basePath}/index.cjs.js`;
     }
 
-    // Удаляем undefined значения
+    // Drop the undefined values
     Object.keys(exportEntry).forEach((key) => {
         if (exportEntry[key] === undefined) {
             delete exportEntry[key];
@@ -96,7 +91,7 @@ function generateHookExport(hookName) {
 }
 
 /**
- * Генерирует основной export
+ * The main export.
  */
 function generateMainExport() {
     const basePath = './dist/hooks';
@@ -112,15 +107,13 @@ function generateMainExport() {
     if (esExists && cjsExists) {
         exportEntry.import = `${basePath}/index.es.js`;
         exportEntry.require = `${basePath}/index.cjs.js`;
-    }
-    else if (esExists) {
+    } else if (esExists) {
         exportEntry.default = `${basePath}/index.es.js`;
-    }
-    else if (cjsExists) {
+    } else if (cjsExists) {
         exportEntry.default = `${basePath}/index.cjs.js`;
     }
 
-    // Удаляем undefined значения
+    // Drop the undefined values
     Object.keys(exportEntry).forEach((key) => {
         if (exportEntry[key] === undefined) {
             delete exportEntry[key];
@@ -131,26 +124,26 @@ function generateMainExport() {
 }
 
 /**
- * Основная функция
+ * Entry point.
  */
 function generateExports() {
     console.log('🔄 Generating exports...');
 
-    // Читаем текущий package.json
+    // Read the current package.json
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
-    // Получаем список компонентов
+    // The hooks
     const hooks = getHooks();
     console.log(`📦 Found ${hooks.length} hooks:`, hooks.join(', '));
 
-    // Генерируем новые exports
+    // Build the new exports
     const newExports = {};
 
-    // Основной export
+    // The main export
     console.log('📝 Generating main export...');
     newExports['.'] = generateMainExport();
 
-    // Exports для каждого компонента
+    // One export per hook
     console.log('📝 Generating component exports...');
     for (const hook of hooks) {
         const exportData = generateHookExport(hook);
@@ -160,10 +153,10 @@ function generateExports() {
         }
     }
 
-    // Обновляем package.json
+    // Update package.json
     packageJson.exports = newExports;
 
-    // Обновляем main и module для продакшена
+    // Update main and module for production
     const mainExport = newExports['.'];
     if (mainExport.require) {
         packageJson.main = mainExport.require;
@@ -175,18 +168,17 @@ function generateExports() {
         packageJson.types = mainExport.types;
     }
 
-    // Записываем обновленный package.json
+    // Write the updated package.json
     writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 4)}\n`);
 
     console.log('✅ Exports generated successfully!');
     console.log(`📄 Updated exports for ${Object.keys(newExports).length} entries`);
 }
 
-// Запуск скрипта
+// Run the script
 try {
     generateExports();
-}
-catch (error) {
+} catch (error) {
     console.error('❌ Error generating exports:', error.message);
     process.exit(1);
 }

@@ -11,19 +11,14 @@ type TUseOpenChangeCompleteParameters = {
 };
 
 export function useOpenChangeComplete(params: TUseOpenChangeCompleteParameters) {
-    const {
-        enabled = true,
-        open,
-        ref,
-        onComplete: onCompleteParam
-    } = params;
+    const { enabled = true, open, ref, onComplete: onCompleteParam } = params;
 
     const onComplete = useStableCallback(onCompleteParam);
     const runOnceAnimationsFinish = useAnimationsFinished(ref, open, false);
 
     React.useEffect(() => {
         if (!enabled) {
-            return undefined;
+            return;
         }
 
         const abortController = new AbortController();

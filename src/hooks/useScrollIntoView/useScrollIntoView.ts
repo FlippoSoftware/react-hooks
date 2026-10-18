@@ -32,20 +32,14 @@ export type UseScrollIntoViewOptions = {
     isList?: boolean;
 };
 
-export type UseScrollIntoViewReturnValue<
-    Target extends HTMLElement = any,
-    Parent extends HTMLElement | null = null
-> = {
+export type UseScrollIntoViewReturnValue<Target extends HTMLElement = any, Parent extends HTMLElement | null = null> = {
     scrollableRef: React.RefObject<Parent | null>;
     targetRef: React.RefObject<Target | null>;
     scrollIntoView: (params?: UseScrollIntoViewAnimation) => void;
     cancel: () => void;
 };
 
-export function useScrollIntoView<
-    Target extends HTMLElement = any,
-    Parent extends HTMLElement | null = null
->({
+export function useScrollIntoView<Target extends HTMLElement = any, Parent extends HTMLElement | null = null>({
     duration = 1250,
     axis = 'y',
     onScrollFinish,
@@ -79,8 +73,8 @@ export function useScrollIntoView<
 
             const start = getScrollStart({ parent: scrollableRef.current, axis }) ?? 0;
 
-            const change
-                = getRelativePosition({
+            const change =
+                getRelativePosition({
                     parent: scrollableRef.current,
                     target: targetRef.current,
                     axis,
@@ -110,8 +104,7 @@ export function useScrollIntoView<
 
                 if (!shouldStop.current && t < 1) {
                     frameID.current = requestAnimationFrame(animateScroll);
-                }
-                else {
+                } else {
                     typeof onScrollFinish === 'function' && onScrollFinish();
                     startTime.current = 0;
                     frameID.current = 0;
@@ -121,15 +114,7 @@ export function useScrollIntoView<
 
             animateScroll();
         },
-        [
-            axis,
-            duration,
-            easing,
-            isList,
-            offset,
-            onScrollFinish,
-            reducedMotion
-        ]
+        [axis, duration, easing, isList, offset, onScrollFinish, reducedMotion]
     );
 
     const handleStop = () => {
@@ -171,14 +156,7 @@ function easeInOutQuad(t: number) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
 
-function getRelativePosition({
-    axis,
-    target,
-    parent,
-    alignment,
-    offset,
-    isList
-}: any): number {
+function getRelativePosition({ axis, target, parent, alignment, offset, isList }: any): number {
     if (!target || (!parent && typeof document === 'undefined')) {
         return 0;
     }
@@ -187,8 +165,7 @@ function getRelativePosition({
     const parentPosition = parentElement.getBoundingClientRect();
     const targetPosition = target.getBoundingClientRect();
 
-    const getDiff = (property: 'top' | 'left'): number =>
-        targetPosition[property] - parentPosition[property];
+    const getDiff = (property: 'top' | 'left'): number => targetPosition[property] - parentPosition[property];
 
     if (axis === 'y') {
         const diff = getDiff('top');
@@ -290,8 +267,7 @@ function setScrollParam({ axis, parent, distance }: SetScrollParamParams) {
 
     if (parent) {
         parent[method] = distance;
-    }
-    else {
+    } else {
         const { body, documentElement } = document;
         body[method] = distance;
         documentElement[method] = distance;

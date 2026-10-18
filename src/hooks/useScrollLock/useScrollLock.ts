@@ -51,8 +51,7 @@ function preventScrollInsetScrollbars(referenceElement: Element | null) {
     const resizeFrame = AnimationFrame.create();
 
     // Handle `scrollbar-gutter` in Chrome when there is no scrollable content.
-    const supportsStableScrollbarGutter
-        = typeof CSS !== 'undefined' && CSS.supports?.('scrollbar-gutter', 'stable');
+    const supportsStableScrollbarGutter = typeof CSS !== 'undefined' && CSS.supports?.('scrollbar-gutter', 'stable');
 
     // Pinch-zoom in Safari causes a shift. Just don't lock scroll if there's any pinch-zoom.
     if (isWebKit && (win.visualViewport?.scale ?? 1) !== 1) {
@@ -90,10 +89,8 @@ function preventScrollInsetScrollbars(referenceElement: Element | null) {
 
         const isScrollableY = html.scrollHeight > html.clientHeight;
         const isScrollableX = html.scrollWidth > html.clientWidth;
-        const hasConstantOverflowY
-            = htmlStyles.overflowY === 'scroll' || bodyStyles.overflowY === 'scroll';
-        const hasConstantOverflowX
-            = htmlStyles.overflowX === 'scroll' || bodyStyles.overflowX === 'scroll';
+        const hasConstantOverflowY = htmlStyles.overflowY === 'scroll' || bodyStyles.overflowY === 'scroll';
+        const hasConstantOverflowX = htmlStyles.overflowX === 'scroll' || bodyStyles.overflowX === 'scroll';
 
         // Values can be negative in Firefox
         const scrollbarWidth = Math.max(0, win.innerWidth - html.clientWidth);
@@ -132,8 +129,7 @@ function preventScrollInsetScrollbars(referenceElement: Element | null) {
 
         Object.assign(body.style, {
             position: 'relative',
-            height:
-                marginY || scrollbarHeight ? `calc(100dvh - ${marginY + scrollbarHeight}px)` : '100dvh',
+            height: marginY || scrollbarHeight ? `calc(100dvh - ${marginY + scrollbarHeight}px)` : '100dvh',
             width: marginX || scrollbarWidth ? `calc(100vw - ${marginX + scrollbarWidth}px)` : '100vw',
             boxSizing: 'border-box',
             overflow: 'hidden',
@@ -238,26 +234,28 @@ const SCROLL_LOCKER = new ScrollLocker();
  * @param enabled - Whether to enable the scroll lock.
  * @param referenceElement - Element or HookTarget to use as a reference for lock calculations.
  */
-export function useScrollLock(enabled: boolean = true, referenceElement: HookTarget | Element | null = null) {
+export function useScrollLock(enabled = true, referenceElement: HookTarget | Element | null = null) {
     useIsoLayoutEffect(() => {
         if (!enabled) {
-            return undefined;
+            return;
         }
 
         let element: Element | null = null;
         if (referenceElement) {
             if (referenceElement instanceof Element) {
                 element = referenceElement;
-            }
-            else if (isTarget(referenceElement)) {
+            } else if (isTarget(referenceElement)) {
                 element = isTarget.getElement(referenceElement) as Element | null;
             }
         }
 
         return SCROLL_LOCKER.acquire(element);
-    }, [enabled, referenceElement instanceof Element
-        ? referenceElement
-        : referenceElement && isTarget(referenceElement)
-            ? isTarget.getRawElement(referenceElement)
-            : null]);
+    }, [
+        enabled,
+        referenceElement instanceof Element
+            ? referenceElement
+            : referenceElement && isTarget(referenceElement)
+              ? isTarget.getRawElement(referenceElement)
+              : null
+    ]);
 }

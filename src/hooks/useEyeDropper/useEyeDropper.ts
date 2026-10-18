@@ -16,16 +16,14 @@ export type UseEyeDropperReturnValue = {
 const isSupported = typeof window !== 'undefined' && !isOpera() && 'EyeDropper' in window;
 
 export function useEyeDropper(): UseEyeDropperReturnValue {
-    const open = useStableCallback(
-        (options: EyeDropperOpenOptions = {}): Promise<EyeDropperOpenReturnType | undefined> => {
-            if (isSupported) {
-                const eyeDropper = new (window as any).EyeDropper();
-                return eyeDropper.open(options);
-            }
-
-            return Promise.resolve(undefined);
+    const open = useStableCallback((options: EyeDropperOpenOptions = {}): Promise<EyeDropperOpenReturnType | undefined> => {
+        if (isSupported) {
+            const eyeDropper = new (window as any).EyeDropper();
+            return eyeDropper.open(options);
         }
-    );
+
+        return Promise.resolve(undefined);
+    });
 
     return { isSupported, open };
 }

@@ -36,15 +36,9 @@ export type UseFocus = {
 
     (target: HookTarget, options?: UseFocusOptions): UseFocusReturn;
 
-    <Target extends Element>(
-        callback?: (event: FocusEvent) => void,
-        target?: never
-    ): UseFocusReturn & { ref: RefAsState<Target> };
+    <Target extends Element>(callback?: (event: FocusEvent) => void, target?: never): UseFocusReturn & { ref: RefAsState<Target> };
 
-    <Target extends Element>(
-        options?: UseFocusOptions,
-        target?: never
-    ): UseFocusReturn & { ref: RefAsState<Target> };
+    <Target extends Element>(options?: UseFocusOptions, target?: never): UseFocusReturn & { ref: RefAsState<Target> };
 };
 
 export const useFocus = ((...params: any[]) => {
@@ -56,8 +50,8 @@ export const useFocus = ((...params: any[]) => {
                 ? params[1]
                 : { onFocus: params[1] }
             : typeof params[0] === 'object'
-                ? params[0]
-                : { onFocus: params[0] }
+              ? params[0]
+              : { onFocus: params[0] }
     ) as UseFocusOptions | undefined;
     const enabled = options?.enabled ?? true;
     const initialValue = options?.initialValue ?? false;
@@ -70,32 +64,27 @@ export const useFocus = ((...params: any[]) => {
     const elementRef = React.useRef<HTMLElement | null>(null);
 
     const focus = () => {
-        if (!elementRef.current)
-            return;
+        if (!elementRef.current) return;
         elementRef.current.focus();
         setFocused(true);
     };
 
     const blur = () => {
-        if (!elementRef.current)
-            return;
+        if (!elementRef.current) return;
         elementRef.current.blur();
         setFocused(false);
     };
 
     useIsoLayoutEffect(() => {
-        if (!enabled || (!target && !internalRef.state))
-            return;
+        if (!enabled || (!target && !internalRef.state)) return;
         const element = (target ? isTarget.getElement(target) : internalRef.current) as HTMLElement;
-        if (!element)
-            return;
+        if (!element) return;
 
         elementRef.current = element;
 
         const onFocus = (event: FocusEvent) => {
             internalOptionsRef.current?.onFocus?.(event);
-            if (!focus || (event.target as HTMLElement).matches?.(':focus-visible'))
-                setFocused(true);
+            if (!focus || (event.target as HTMLElement).matches?.(':focus-visible')) setFocused(true);
         };
 
         const onBlur = (event: FocusEvent) => {
@@ -103,8 +92,7 @@ export const useFocus = ((...params: any[]) => {
             setFocused(false);
         };
 
-        if (initialValue)
-            element.focus();
+        if (initialValue) element.focus();
 
         element.addEventListener('focus', onFocus);
         element.addEventListener('blur', onBlur);
@@ -115,8 +103,7 @@ export const useFocus = ((...params: any[]) => {
         };
     }, [target && isTarget.getRawElement(target), internalRef.state, enabled]);
 
-    if (target)
-        return { focus, blur, focused };
+    if (target) return { focus, blur, focused };
     return {
         ref: internalRef,
         focus,

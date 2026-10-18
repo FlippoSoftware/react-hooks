@@ -26,11 +26,10 @@ export type UseStorageOptions<T> = {
     deserialize?: (value: string | undefined) => T;
 };
 
-function serializeJSON<T>(value: T, hookName: string = 'use-local-storage') {
+function serializeJSON<T>(value: T, hookName = 'use-local-storage') {
     try {
         return JSON.stringify(value);
-    }
-    catch (_error: unknown) {
+    } catch (_error: unknown) {
         throw new Error(`@mantine/hooks ${hookName}: Failed to serialize the value`);
     }
 }
@@ -38,8 +37,7 @@ function serializeJSON<T>(value: T, hookName: string = 'use-local-storage') {
 function deserializeJSON(value: string | undefined) {
     try {
         return value && JSON.parse(value);
-    }
-    catch {
+    } catch {
         return value;
     }
 }
@@ -48,8 +46,7 @@ function createStorageHandler(type: StorageType) {
     const getItem = (key: string) => {
         try {
             return window[type].getItem(key);
-        }
-        catch (_error: unknown) {
+        } catch (_error: unknown) {
             console.warn('use-local-storage: Failed to get value from storage, localStorage is blocked');
             return null;
         }
@@ -58,8 +55,7 @@ function createStorageHandler(type: StorageType) {
     const setItem = (key: string, value: string) => {
         try {
             window[type].setItem(key, value);
-        }
-        catch (_error: unknown) {
+        } catch (_error: unknown) {
             console.warn('use-local-storage: Failed to set value to storage, localStorage is blocked');
         }
     };
@@ -67,11 +63,8 @@ function createStorageHandler(type: StorageType) {
     const removeItem = (key: string) => {
         try {
             window[type].removeItem(key);
-        }
-        catch (_error: unknown) {
-            console.warn(
-                'use-local-storage: Failed to remove value from storage, localStorage is blocked'
-            );
+        } catch (_error: unknown) {
+            console.warn('use-local-storage: Failed to remove value from storage, localStorage is blocked');
         }
     };
 
@@ -96,29 +89,22 @@ export function createStorage<T>(type: StorageType, hookName: string) {
         deserialize = deserializeJSON,
         serialize = (value: T) => serializeJSON(value, hookName)
     }: UseStorageOptions<T>): UseStorageReturnValue<T> {
-        const readStorageValue = useStableCallback(
-            (skipStorage?: boolean): T => {
-                let storageBlockedOrSkipped;
+        const readStorageValue = useStableCallback((skipStorage?: boolean): T => {
+            let storageBlockedOrSkipped;
 
-                try {
-                    storageBlockedOrSkipped
-                        = typeof window === 'undefined'
-                          || !(type in window)
-                          || window[type] === null
-                          || !!skipStorage;
-                }
-                catch (_e) {
-                    storageBlockedOrSkipped = true;
-                }
-
-                if (storageBlockedOrSkipped) {
-                    return defaultValue as T;
-                }
-
-                const storageValue = getItem(key);
-                return storageValue !== null ? deserialize(storageValue) : (defaultValue as T);
+            try {
+                storageBlockedOrSkipped = typeof window === 'undefined' || !(type in window) || window[type] === null || !!skipStorage;
+            } catch (_e) {
+                storageBlockedOrSkipped = true;
             }
-        );
+
+            if (storageBlockedOrSkipped) {
+                return defaultValue as T;
+            }
+
+            const storageValue = getItem(key);
+            return storageValue !== null ? deserialize(storageValue) : (defaultValue as T);
+        });
 
         const [value, setValue] = React.useState<T>(readStorageValue(getInitialValueInEffect));
 
@@ -131,14 +117,11 @@ export function createStorage<T>(type: StorageType, hookName: string) {
                         setItem(key, serialize(result));
                         // Defer dispatching this event to avoid the handler being called during render.
                         queueMicrotask(() => {
-                            window.dispatchEvent(
-                                new CustomEvent(eventName, { detail: { key, value: updater(current) } })
-                            );
+                            window.dispatchEvent(new CustomEvent(eventName, { detail: { key, value: updater(current) } }));
                         });
                         return result;
                     });
-                }
-                else {
+                } else {
                     setItem(key, serialize(val));
                     window.dispatchEvent(new CustomEvent(eventName, { detail: { key, value: val } }));
                     setValue(val);
@@ -154,18 +137,14 @@ export function createStorage<T>(type: StorageType, hookName: string) {
         }, [key, defaultValue]);
 
         useWindowEvent('storage', (event) => {
-            if (sync) {
-                if (event.storageArea === window[type] && event.key === key) {
-                    setValue(deserialize(event.newValue ?? undefined));
-                }
+            if (sync && event.storageArea === window[type] && event.key === key) {
+                setValue(deserialize(event.newValue ?? undefined));
             }
         });
 
         useWindowEvent(eventName, (event) => {
-            if (sync) {
-                if (event.detail.key === key) {
-                    setValue(event.detail.value);
-                }
+            if (sync && event.detail.key === key) {
+                setValue(event.detail.value);
             }
         });
 
@@ -187,18 +166,12 @@ export function createStorage<T>(type: StorageType, hookName: string) {
 export function readValue(type: StorageType) {
     const { getItem } = createStorageHandler(type);
 
-    return function read<T>({
-        key,
-        defaultValue,
-        deserialize = deserializeJSON
-    }: UseStorageOptions<T>) {
+    return function read<T>({ key, defaultValue, deserialize = deserializeJSON }: UseStorageOptions<T>) {
         let storageBlockedOrSkipped;
 
         try {
-            storageBlockedOrSkipped
-                = typeof window === 'undefined' || !(type in window) || window[type] === null;
-        }
-        catch (_e) {
+            storageBlockedOrSkipped = typeof window === 'undefined' || !(type in window) || window[type] === null;
+        } catch (_e) {
             storageBlockedOrSkipped = true;
         }
 

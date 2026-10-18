@@ -20,8 +20,7 @@ function getConnection(): Omit<UserNetworkReturnValue, 'online'> {
     }
 
     const _navigator = navigator as any;
-    const connection: any
-        = _navigator.connection || _navigator.mozConnection || _navigator.webkitConnection;
+    const connection: any = _navigator.connection || _navigator.mozConnection || _navigator.webkitConnection;
 
     if (!connection) {
         return {};
@@ -40,9 +39,7 @@ function getConnection(): Omit<UserNetworkReturnValue, 'online'> {
 export function useNetwork(): UserNetworkReturnValue {
     const [status, setStatus] = React.useState<UserNetworkReturnValue>({ online: true });
 
-    const handleConnectionChange = useStableCallback(
-        () => setStatus((current) => ({ ...current, ...getConnection() }))
-    );
+    const handleConnectionChange = useStableCallback(() => setStatus((current) => ({ ...current, ...getConnection() })));
 
     useWindowEvent('online', () => setStatus({ online: true, ...getConnection() }));
     useWindowEvent('offline', () => setStatus({ online: false, ...getConnection() }));
@@ -61,7 +58,7 @@ export function useNetwork(): UserNetworkReturnValue {
             setStatus((current) => ({ ...current, online: _navigator.onLine }));
         }
 
-        return undefined;
+        return;
     }, []);
 
     return status;

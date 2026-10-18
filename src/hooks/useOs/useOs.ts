@@ -2,14 +2,7 @@ import React from 'react';
 
 import { useIsoLayoutEffect } from '../useIsoLayoutEffect';
 
-export type UseOSReturnValue
-    = | 'undetermined'
-      | 'macos'
-      | 'ios'
-      | 'windows'
-      | 'android'
-      | 'linux'
-      | 'chromeos';
+export type UseOSReturnValue = 'undetermined' | 'macos' | 'ios' | 'windows' | 'android' | 'linux' | 'chromeos';
 
 function isMacOS(userAgent: string): boolean {
     const macosPattern = /Macintosh|MacIntel|MacPPC|Mac68K/i;
@@ -80,9 +73,7 @@ export type UseOsOptions = {
 };
 
 export function useOs(options: UseOsOptions = { getValueInEffect: true }): UseOSReturnValue {
-    const [value, setValue] = React.useState<UseOSReturnValue>(
-        options.getValueInEffect ? 'undetermined' : getOS()
-    );
+    const [value, setValue] = React.useState<UseOSReturnValue>(options.getValueInEffect ? 'undetermined' : getOS());
 
     useIsoLayoutEffect(() => {
         if (options.getValueInEffect) {

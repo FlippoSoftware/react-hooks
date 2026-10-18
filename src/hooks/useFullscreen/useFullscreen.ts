@@ -6,11 +6,8 @@ import { useStableCallback } from '../useStableCallback';
 function getFullscreenElement(): HTMLElement | null {
     const _document = window.document as any;
 
-    const fullscreenElement
-        = _document.fullscreenElement
-          || _document.webkitFullscreenElement
-          || _document.mozFullScreenElement
-          || _document.msFullscreenElement;
+    const fullscreenElement =
+        _document.fullscreenElement || _document.webkitFullscreenElement || _document.mozFullScreenElement || _document.msFullscreenElement;
 
     return fullscreenElement;
 }
@@ -38,11 +35,11 @@ function enterFullScreen(element: HTMLElement) {
     const _element = element as any;
 
     return (
-        _element.requestFullscreen?.()
-        || _element.msRequestFullscreen?.()
-        || _element.webkitEnterFullscreen?.()
-        || _element.webkitRequestFullscreen?.()
-        || _element.mozRequestFullscreen?.()
+        _element.requestFullscreen?.() ||
+        _element.msRequestFullscreen?.() ||
+        _element.webkitEnterFullscreen?.() ||
+        _element.webkitRequestFullscreen?.() ||
+        _element.mozRequestFullscreen?.()
     );
 }
 
@@ -50,10 +47,7 @@ const prefixes = ['', 'webkit', 'moz', 'ms'];
 
 function addEvents(
     element: HTMLElement,
-    {
-        onFullScreen,
-        onError
-    }: { onFullScreen: (event: Event) => void; onError: (event: Event) => void }
+    { onFullScreen, onError }: { onFullScreen: (event: Event) => void; onError: (event: Event) => void }
 ) {
     prefixes.forEach((prefix) => {
         element.addEventListener(`${prefix}fullscreenchange`, onFullScreen);
@@ -79,27 +73,20 @@ export function useFullscreen<T extends HTMLElement = any>(): UseFullscreenRetur
 
     const _ref = React.useRef<T>(null);
 
-    const handleFullscreenChange = useStableCallback(
-        (event: Event) => {
-            setFullscreen(event.target === getFullscreenElement());
-        }
-    );
+    const handleFullscreenChange = useStableCallback((event: Event) => {
+        setFullscreen(event.target === getFullscreenElement());
+    });
 
-    const handleFullscreenError = useStableCallback(
-        (event: Event) => {
-            setFullscreen(false);
+    const handleFullscreenError = useStableCallback((event: Event) => {
+        setFullscreen(false);
 
-            console.error(
-                `Headless UI hooks: use-fullscreen: Error attempting full-screen mode method: ${event} (${event.target})`
-            );
-        }
-    );
+        console.error(`Headless UI hooks: use-fullscreen: Error attempting full-screen mode method: ${event} (${event.target})`);
+    });
 
     const toggle = useStableCallback(async () => {
         if (!getFullscreenElement()) {
             await enterFullScreen(_ref.current!);
-        }
-        else {
+        } else {
             await exitFullscreen();
         }
     });
@@ -107,8 +94,7 @@ export function useFullscreen<T extends HTMLElement = any>(): UseFullscreenRetur
     const ref = useStableCallback((element: T | null) => {
         if (element === null) {
             _ref.current = window.document.documentElement as T;
-        }
-        else {
+        } else {
             _ref.current = element;
         }
     });
@@ -116,8 +102,7 @@ export function useFullscreen<T extends HTMLElement = any>(): UseFullscreenRetur
     useIsoLayoutEffect(() => {
         const target = _ref.current ?? window?.document?.documentElement;
 
-        if (!target)
-            return undefined;
+        if (!target) return;
 
         return addEvents(target, {
             onFullScreen: handleFullscreenChange,

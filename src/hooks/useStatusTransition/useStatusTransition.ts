@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 
 import { AnimationFrame } from '../useAnimationFrame';
 import { useEventCallback } from '../useEventCallback';
@@ -38,14 +38,8 @@ export type StatusTransition = 'starting' | 'ending' | 'idle' | 'between' | unde
  * });
  * ```
  */
-export function useStatusTransition<TStatus>(config: useStatusTransition.Params<TStatus>):
-useStatusTransition.ReturnValue {
-    const {
-        status,
-        shouldBeMounted: shouldBeMountedParam,
-        enableIdleState = false,
-        deferEndingState = false
-    } = config;
+export function useStatusTransition<TStatus>(config: useStatusTransition.Params<TStatus>): useStatusTransition.ReturnValue {
+    const { status, shouldBeMounted: shouldBeMountedParam, enableIdleState = false, deferEndingState = false } = config;
 
     const shouldBeMounted = useEventCallback(shouldBeMountedParam);
 
@@ -71,10 +65,8 @@ useStatusTransition.ReturnValue {
         }
 
         // Unmount transition: mounted → unmounted
-        if (!shouldBeMountedNow && mounted && transitionStatus !== 'ending') {
-            if (!deferEndingState) {
-                setTransitionStatus('ending');
-            }
+        if (!shouldBeMountedNow && mounted && transitionStatus !== 'ending' && !deferEndingState) {
+            setTransitionStatus('ending');
         }
     }, [shouldBeMountedNow, mounted, transitionStatus, deferEndingState]);
 
@@ -90,13 +82,13 @@ useStatusTransition.ReturnValue {
             };
         }
 
-        return undefined;
+        return;
     }, [shouldBeMountedNow, mounted, transitionStatus, deferEndingState]);
 
     // Handle starting transition completion - like floating-ui
     useIsoLayoutEffect(() => {
         if (!shouldBeMountedNow || enableIdleState) {
-            return undefined;
+            return;
         }
 
         if (transitionStatus === 'starting') {
@@ -111,7 +103,7 @@ useStatusTransition.ReturnValue {
             };
         }
 
-        return undefined;
+        return;
     }, [shouldBeMountedNow, enableIdleState, transitionStatus]);
 
     // Handle idle state when enabled
@@ -130,7 +122,7 @@ useStatusTransition.ReturnValue {
             };
         }
 
-        return undefined;
+        return;
     }, [enableIdleState, shouldBeMountedNow, transitionStatus]);
 
     return React.useMemo(
@@ -147,7 +139,6 @@ useStatusTransition.ReturnValue {
              * Current transition state: 'starting', 'ending', 'idle', 'between', or undefined
              */
             transitionStatus
-
         }),
         [mounted, transitionStatus]
     );

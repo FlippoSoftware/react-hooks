@@ -11,12 +11,7 @@ type TUseControlledStateParams<T> = {
 };
 
 export function useControlledState<T>(params: TUseControlledStateParams<T>): [T, TSetState<T>] {
-    const {
-        prop,
-        defaultProp,
-        onChange,
-        caller
-    } = params;
+    const { prop, defaultProp, onChange, caller } = params;
     const [uncontrolledProp, setUncontrolledSet, onChangeRef] = useUncontrolledState({ defaultProp, onChange });
 
     const isControlled = prop !== undefined;
@@ -41,23 +36,27 @@ export function useControlledState<T>(params: TUseControlledStateParams<T>): [T,
     }
     /* eslint-enable react-hooks/rules-of-hooks */
 
-    const setState = React.useCallback<TSetState<T>>((nextState: React.SetStateAction<T>) => {
-        if (isControlled) {
-            const newState = isFunction(nextState) ? nextState(state) : nextState;
+    const setState = React.useCallback<TSetState<T>>(
+        (nextState: React.SetStateAction<T>) => {
+            if (isControlled) {
+                const newState = isFunction(nextState) ? nextState(state) : nextState;
 
-            if (newState !== state) {
-                onChangeRef.current?.(newState);
+                if (newState !== state) {
+                    onChangeRef.current?.(newState);
+                }
+            } else {
+                setUncontrolledSet(nextState);
             }
-        }
-        else {
-            setUncontrolledSet(nextState);
-        }
-    }, [state, isControlled, setUncontrolledSet, onChangeRef]);
+        },
+        [state, isControlled, setUncontrolledSet, onChangeRef]
+    );
 
     return [state, setState];
 }
 
-function useUncontrolledState<T>(params: Omit<TUseControlledStateParams<T>, 'prop' | 'caller'>): [Value: T, SetValue: TSetState<T>, OnChangeRef: React.RefObject<TChangeHandler<T> | undefined>] {
+function useUncontrolledState<T>(
+    params: Omit<TUseControlledStateParams<T>, 'prop' | 'caller'>
+): [Value: T, SetValue: TSetState<T>, OnChangeRef: React.RefObject<TChangeHandler<T> | undefined>] {
     const { defaultProp, onChange } = params;
     const [state, setState] = React.useState(defaultProp);
     const prevStateRef = React.useRef(state);

@@ -102,12 +102,7 @@ function parseSnapPoint(snapPoint: SnapPoint, containerSize: number): number | n
 /**
  * Find the closest snap point to the current offset.
  */
-function findClosestSnapPoint(
-    offset: number,
-    snapPoints: number[],
-    velocity: number,
-    velocityThreshold: number
-): number {
+function findClosestSnapPoint(offset: number, snapPoints: number[], velocity: number, velocityThreshold: number): number {
     if (snapPoints.length === 0) {
         return 0;
     }
@@ -115,9 +110,7 @@ function findClosestSnapPoint(
     // If velocity is high, snap to the next point in the direction of movement
     if (Math.abs(velocity) > velocityThreshold) {
         const direction = velocity > 0 ? 1 : -1;
-        const nextPoints = direction > 0
-            ? snapPoints.filter((p) => p > offset)
-            : snapPoints.filter((p) => p < offset);
+        const nextPoints = direction > 0 ? snapPoints.filter((p) => p > offset) : snapPoints.filter((p) => p < offset);
 
         if (nextPoints.length > 0) {
             return direction > 0 ? Math.min(...nextPoints) : Math.max(...nextPoints);
@@ -211,13 +204,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
             setIsDragging(true);
             onDragStart?.();
         },
-        [
-            enabled,
-            open,
-            direction,
-            getPosition,
-            onDragStart
-        ]
+        [enabled, open, direction, getPosition, onDragStart]
     );
 
     const handlePointerMove = React.useCallback(
@@ -251,13 +238,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
                 return;
             }
 
-            const {
-                currentPos,
-                startPos,
-                lastTime,
-                elementSize,
-                startTime
-            } = dragStateRef.current;
+            const { currentPos, startPos, lastTime, elementSize, startTime } = dragStateRef.current;
 
             // Calculate velocity (px/ms)
             const timeDelta = lastTime - startTime;
@@ -272,21 +253,19 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
 
             // Handle snap points
             if (snapPoints.length > 0 && containerRef?.current) {
-                const containerSize = isVertical(direction)
-                    ? containerRef.current.offsetHeight
-                    : containerRef.current.offsetWidth;
+                const containerSize = isVertical(direction) ? containerRef.current.offsetHeight : containerRef.current.offsetWidth;
 
                 // Parse snap points to pixels (including null which means close)
-                const parsedSnapPoints: Array<{ value: number | null; originalIndex: number }> = snapPoints
-                    .map((sp, index) => ({
-                        value: parseSnapPoint(sp, containerSize),
-                        originalIndex: index
-                    }));
+                const parsedSnapPoints: Array<{ value: number | null; originalIndex: number }> = snapPoints.map((sp, index) => ({
+                    value: parseSnapPoint(sp, containerSize),
+                    originalIndex: index
+                }));
 
                 // Separate null (close) snap point
                 const hasCloseSnapPoint = parsedSnapPoints.some((sp) => sp.value === null);
-                const numericSnapPoints = parsedSnapPoints
-                    .filter((sp): sp is { value: number; originalIndex: number } => sp.value !== null);
+                const numericSnapPoints = parsedSnapPoints.filter(
+                    (sp): sp is { value: number; originalIndex: number } => sp.value !== null
+                );
 
                 // Add 0 as the initial open position if not already included
                 const hasZero = numericSnapPoints.some((sp) => sp.value === 0);
@@ -315,8 +294,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
                 if (hasCloseSnapPoint && isPassedThreshold && positionDelta > maxSnapPoint) {
                     shouldClose = true;
                     targetSnapPointIndex = parsedSnapPoints.find((sp) => sp.value === null)?.originalIndex ?? null;
-                }
-                else {
+                } else {
                     // Snap to the closest point
                     shouldClose = false;
                     const closestEntry = numericSnapPoints.find((sp) => sp.value === closestSnapPoint);
@@ -325,8 +303,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
                     // If original index is -1, it means it's the default 0 position (fully open)
                     if (foundIndex === -1 || foundIndex === undefined) {
                         targetSnapPointIndex = activeSnapPointIndex ?? null;
-                    }
-                    else {
+                    } else {
                         targetSnapPointIndex = foundIndex;
                     }
                 }
@@ -335,8 +312,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
                 if (onActiveSnapPointIndexChange && targetSnapPointIndex !== activeSnapPointIndex) {
                     onActiveSnapPointIndexChange(shouldClose ? null : targetSnapPointIndex);
                 }
-            }
-            else {
+            } else {
                 // No snap points, use default behavior
                 shouldClose = percentage > closeThreshold || velocity > velocityThreshold;
             }
@@ -395,14 +371,7 @@ export function useDragGesture(options: UseDragGestureOptions): UseDragGestureRe
                 userSelect: isDragging ? 'none' : undefined
             } as React.CSSProperties
         }),
-        [
-            handlePointerDown,
-            handlePointerMove,
-            handlePointerEnd,
-            handlePointerCancel,
-            enabled,
-            isDragging
-        ]
+        [handlePointerDown, handlePointerMove, handlePointerEnd, handlePointerCancel, enabled, isDragging]
     );
 
     return {

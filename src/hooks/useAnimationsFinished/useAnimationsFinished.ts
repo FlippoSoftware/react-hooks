@@ -1,5 +1,5 @@
 import type React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 
 import { isTarget } from '~@lib/isTarget';
 import { resolveRef } from '~@lib/resolveRef';
@@ -35,11 +35,9 @@ export function useAnimationsFinished(
             if (elementOrRef) {
                 if (elementOrRef instanceof HTMLElement) {
                     element = elementOrRef;
-                }
-                else if (isTarget(elementOrRef as HookTarget)) {
+                } else if (isTarget(elementOrRef as HookTarget)) {
                     element = isTarget.getElement(elementOrRef as HookTarget) as HTMLElement | null;
-                }
-                else {
+                } else {
                     element = resolveRef(elementOrRef as React.RefObject<HTMLElement | null>);
                 }
             }
@@ -50,8 +48,7 @@ export function useAnimationsFinished(
 
             if (typeof element.getAnimations !== 'function' || globalThis.FLIPPO_UI_ANIMATIONS_DISABLED) {
                 fnToExecute();
-            }
-            else {
+            } else {
                 frame.request(() => {
                     function exec(retryOnEmpty = false) {
                         if (!element) {
@@ -85,13 +82,9 @@ export function useAnimationsFinished(
                                     }
 
                                     ReactDOM.flushSync(fnToExecute);
-                                }
-                                else if (
-                                    element.getAnimations().length > 0
-                                    && element
-
-                                        .getAnimations()
-                                        .some((anim) => anim.pending || anim.playState !== 'finished')
+                                } else if (
+                                    element.getAnimations().length > 0 &&
+                                    element.getAnimations().some((anim) => anim.pending || anim.playState !== 'finished')
                                 ) {
                                     // Sometimes animations can be aborted because a property they depend on changes
                                     //  while the animation plays.
@@ -104,8 +97,7 @@ export function useAnimationsFinished(
                     // `open: true` animations need to wait for the next tick to be detected
                     if (waitForNextTick) {
                         frame.request(() => exec(true));
-                    }
-                    else {
+                    } else {
                         exec(true);
                     }
                 });

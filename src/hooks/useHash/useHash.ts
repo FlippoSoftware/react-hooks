@@ -8,12 +8,8 @@ export type UseHashParams = {
     getInitialValueInEffect?: boolean;
 };
 
-export function useHash({
-    getInitialValueInEffect = true
-}: UseHashParams = {}): UseHashReturnValue {
-    const [hash, setHash] = React.useState<string>(
-        getInitialValueInEffect ? '' : window.location.hash || ''
-    );
+export function useHash({ getInitialValueInEffect = true }: UseHashParams = {}): UseHashReturnValue {
+    const [hash, setHash] = React.useState<string>(getInitialValueInEffect ? '' : window.location.hash || '');
 
     const setHashHandler = (value: string) => {
         const valueWithHash = value.startsWith('#') ? value : `#${value}`;

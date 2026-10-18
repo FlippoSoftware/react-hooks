@@ -54,3 +54,5 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+# API Extractor work files (the report in etc/ is versioned)
+temp/

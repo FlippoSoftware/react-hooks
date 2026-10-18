@@ -3,14 +3,12 @@ import React from 'react';
 import { useLazyRef } from '../useLazyRef';
 
 // https://github.com/mui/material-ui/issues/41190#issuecomment-2040873379
-const useInsertionEffect = (React as any)[
-    `useInsertionEffect${Math.random().toFixed(1)}`.slice(0, -3)
-];
-const useSafeInsertionEffect
+const useInsertionEffect = (React as any)[`useInsertionEffect${Math.random().toFixed(1)}`.slice(0, -3)];
+const useSafeInsertionEffect =
     // React 17 doesn't have useInsertionEffect.
-    = useInsertionEffect
+    useInsertionEffect &&
     // Preact replaces useInsertionEffect with useLayoutEffect and fires too late.
-      && useInsertionEffect !== React.useLayoutEffect
+    useInsertionEffect !== React.useLayoutEffect
         ? useInsertionEffect
         : (fn: any) => fn();
 
@@ -58,8 +56,6 @@ function createStableCallback() {
 
 function assertNotCalled() {
     if (process.env.NODE_ENV !== 'production') {
-        throw /* minify-error-disabled */ new Error(
-            'Headless UI: Cannot call an event handler while rendering.'
-        );
+        throw /* minify-error-disabled */ new Error('Headless UI: Cannot call an event handler while rendering.');
     }
 }

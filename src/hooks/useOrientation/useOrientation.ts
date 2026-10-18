@@ -30,10 +30,7 @@ export type UseOrientationReturnType = {
     type: OrientationType;
 };
 
-function getInitialValue(
-    initialValue: UseOrientationReturnType,
-    getInitialValueInEffect: boolean
-): UseOrientationReturnType {
+function getInitialValue(initialValue: UseOrientationReturnType, getInitialValueInEffect: boolean): UseOrientationReturnType {
     if (getInitialValueInEffect) {
         return initialValue;
     }
@@ -53,8 +50,8 @@ export function useOrientation({
     defaultType = 'landscape-primary',
     getInitialValueInEffect = true
 }: UseOrientationOptions = {}): UseOrientationReturnType {
-    const [orientation, setOrientation] = React.useState<UseOrientationReturnType>(
-        () => getInitialValue(
+    const [orientation, setOrientation] = React.useState<UseOrientationReturnType>(() =>
+        getInitialValue(
             {
                 angle: defaultAngle,
                 type: defaultType

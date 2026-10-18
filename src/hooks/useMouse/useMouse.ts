@@ -21,9 +21,7 @@ export type UseMouseReturn = {
 
 export function useMouse(target: HookTarget, options?: UseMouseOptions): UseMouseReturn;
 
-export function useMouse<Target extends HTMLElement>(
-    options?: UseMouseOptions
-): UseMouseReturn & { ref: RefAsState<Target> };
+export function useMouse<Target extends HTMLElement>(options?: UseMouseOptions): UseMouseReturn & { ref: RefAsState<Target> };
 
 export function useMouse<Target extends HTMLElement>(
     ...args: [HookTarget, UseMouseOptions?] | [UseMouseOptions?]
@@ -45,19 +43,12 @@ export function useMouse<Target extends HTMLElement>(
             if (element) {
                 const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
 
-                const x = Math.max(
-                    0,
-                    Math.round(event.pageX - rect.left - (window.scrollX || window.scrollX))
-                );
+                const x = Math.max(0, Math.round(event.pageX - rect.left - (window.scrollX || window.scrollX)));
 
-                const y = Math.max(
-                    0,
-                    Math.round(event.pageY - rect.top - (window.scrollY || window.scrollY))
-                );
+                const y = Math.max(0, Math.round(event.pageY - rect.top - (window.scrollY || window.scrollY)));
 
                 setPosition({ x, y });
-            }
-            else {
+            } else {
                 setPosition({ x: event.clientX, y: event.clientY });
             }
         };

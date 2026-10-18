@@ -10,11 +10,9 @@ import { useIsoLayoutEffect } from '../useIsoLayoutEffect';
 
 function focusElement(element: HTMLElement) {
     const autofocusElement = element.querySelector('[data-autofocus]') as HTMLElement;
-    if (autofocusElement)
-        return autofocusElement.focus();
+    if (autofocusElement) return autofocusElement.focus();
     const focusableElements = tabbable(element);
-    if (focusableElements.length)
-        focusableElements[0]?.focus();
+    if (focusableElements.length) focusableElements[0]?.focus();
 }
 
 export type UseFocusTrapReturn = {
@@ -38,23 +36,19 @@ export function useFocusTrap<Target extends HTMLElement>(...args: any[]) {
     const toggle = () => setActive((prevActive: boolean) => !prevActive);
 
     useIsoLayoutEffect(() => {
-        if (!active)
-            return;
+        if (!active) return;
 
         const element = target ? isTarget.getElement(target) : internalRef.current;
-        if (!element)
-            return;
+        if (!element) return;
 
         const htmlElement = element as HTMLElement;
         focusElement(htmlElement);
 
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key !== 'Tab')
-                return;
+            if (event.key !== 'Tab') return;
 
             const [firstElement, ...restElements] = tabbable(htmlElement);
-            if (!restElements.length)
-                return;
+            if (!restElements.length) return;
 
             const lastElement = restElements.at(-1)!;
 
