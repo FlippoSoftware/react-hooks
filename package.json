@@ -360,7 +360,9 @@
         "api:check": "api-extractor run",
         "lint:check": "biome check && api-extractor run",
         "lint:fix": "biome lint --fix && biome format --fix",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "prepare": "simple-git-hooks",
+        "hooks:install": "simple-git-hooks"
     },
     "peerDependencies": {
         "react": "^19.1.1",
@@ -383,6 +385,7 @@
         "glob": "^11.0.3",
         "react": "19.3.0",
         "react-dom": "19.3.0",
+        "simple-git-hooks": "2.14.0",
         "typescript": "^5.9.2",
         "vite": "6.2.5",
         "vite-plugin-dts": "^4.5.4",
@@ -404,5 +407,11 @@
         "dist"
     ],
     "sideEffects": false,
-    "packageManager": "pnpm@11.24.0"
+    "packageManager": "pnpm@11.24.0",
+    "simple-git-hooks": {
+        "pre-commit": "test \"$(git symbolic-ref --quiet HEAD)\" != refs/heads/main || { echo \"Direct commits to main are not allowed. Create a feature branch.\" >&2; exit 1; }",
+        "pre-merge-commit": "test \"$(git symbolic-ref --quiet HEAD)\" != refs/heads/main || { echo \"Local merge commits on main are not allowed. Open a pull request.\" >&2; exit 1; }",
+        "pre-push": "while read -r local_ref local_sha remote_ref remote_sha; do if [ \"$remote_ref\" = refs/heads/main ]; then echo \"Direct pushes to main are not allowed. Open a pull request.\" >&2; exit 1; fi; done",
+        "preserveUnused": true
+    }
 }
