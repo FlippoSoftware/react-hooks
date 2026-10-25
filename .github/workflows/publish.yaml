@@ -4,16 +4,28 @@ on:
     push:
         branches:
             - main
+    # Publishes an existing release again, e.g. when its publication failed: run it with the tag (`react-hooks-v1.1.0`).
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: Tag of the release to publish
+                required: true
 
-    
 permissions:
-    contents: write
-    pull-requests: write
+    contents: read
 
+concurrency:
+    group: release
+    cancel-in-progress: false
 
 jobs:
     release-please:
+        if: ${{ github.event_name == 'push' }}
         runs-on: ubuntu-latest
+        timeout-minutes: 10
+        permissions:
+            contents: write
+            pull-requests: write
         outputs:
             release_created: ${{ steps.release.outputs.release_created }}
             tag_name: ${{ steps.release.outputs.tag_name }}
@@ -28,15 +40,19 @@ jobs:
 
     publish:
         needs: release-please
-        if: ${{ needs.release-please.outputs.release_created == 'true' }}
+        # Runs after a release of release-please, or by hand for an existing tag. `!cancelled()` lets it run after the
+        # skipped job above (by default a job needs every `needs` to succeed) but not after Cancel.
+        if: ${{ !cancelled() && (needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch') }}
         runs-on: ubuntu-latest
+        timeout-minutes: 15
         permissions:
             contents: read
+            # npm trusted publishing (OIDC): no npm token is stored in the secrets.
             id-token: write
         steps:
             - uses: actions/checkout@v4
               with:
-                ref: ${{ needs.release-please.outputs.tag_name }}
+                  ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
 
             - name: Install pnpm
               uses: pnpm/action-setup@v4
@@ -44,9 +60,9 @@ jobs:
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
-                node-version-file: ".nvmrc"
-                registry-url: "https://registry.npmjs.org"
-                cache: "pnpm"
+                  node-version-file: .nvmrc
+                  registry-url: https://registry.npmjs.org
+                  cache: pnpm
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
